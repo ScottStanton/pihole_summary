@@ -9,12 +9,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
 
-html_location = '/var/www/html'
 
 dt = datetime.now()
 dateTimeNow = str(dt.year) + '-' + str(dt.month) + '-' + str(dt.day) + ' ' + str(dt.hour) + ':' + str("{0:0=2d}".format(dt.minute))
 
-htmlFile = html_location + '/pihole.html'
+htmlFile = '/var/www/html/pihole.html'
 
 argList=sys.argv
 del argList[0]
@@ -49,8 +48,8 @@ hfooter = '</body></html>'
 ###  Creating the graphs for the webpage  ###
 
 for ph in argList:
-    URL = 'http://' + ph + '/admin/api.php?overTimeData10mins'
-    picture = html_location + ' + ph + '.png'
+    URL='http://' + ph + '/admin/api.php?overTimeData10mins'
+    picture='/var/www/html/' + ph + '.png'
     phSummary = requests.get(URL)
     phSummaryJson = json.loads(phSummary.text)
     #print(phSummary.text)
@@ -58,11 +57,11 @@ for ph in argList:
     aot = phSummaryJson["ads_over_time"]
 
     lengthdot = len(dot)
-    i = 0
-    ts = ['']*lengthdot
-    doty = ['']*lengthdot
-    aoty = ['']*lengthdot
-    maxy = ['']*lengthdot
+    i=0
+    ts=['']*lengthdot
+    doty=['']*lengthdot
+    aoty=['']*lengthdot
+    maxy=['']*lengthdot
 
     for x in dot.keys():
         ts[i] = datetime.fromtimestamp(int(x)).strftime('%H:%M')
@@ -99,14 +98,14 @@ openFile.write(hheader)
 ###  ever many pihoes you put on the command line       ###
 
 for ph in argList:
-   URL = 'http://' + ph + '/admin/api.php?summary'
+   URL='http://' + ph + '/admin/api.php?summary'
    phSummary = requests.get(URL) 
    phSummaryJson = json.loads(phSummary.text)
    center = '''<div style="width:100%; height:''' + rows + ''';">
-<h1><center><a href="http://{}/admin">{}</a></center></h1>
 <table style="height: 36px; width: 60%; border-collapse: collapse; border-style: none; margin-left: auto; margin-right: auto;" border="0" cellspacing="3" cellpadding="2">
 <tbody>
 <tr style="height: 30px;">
+<td rowspan=2, style="width: 14.2857%; height: 24px; text-align: center;"><h1><center><a href="http://{}/admin">{}</a></center></h1></td>
 <td style="width: 14.2857%; height: 24px; text-align: center;"><h3>Domains being blocked</h3></td>
 <td style="width: 14.2857%; height: 24px; text-align: center;"><h3>DNS Queries</h3></td>
 <td style="width: 14.2857%; height: 24px; text-align: center;"><h3>Ads Blocked</h3></td>
