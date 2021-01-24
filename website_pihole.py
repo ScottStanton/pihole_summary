@@ -70,6 +70,12 @@ for ph in argList:
         maxy[i] = doty[i] + aoty[i]
         i += 1
     
+    #print(doty)
+    #print(max(doty))
+    #print(aoty)
+    #print(max(aoty))
+    #print(maxy)
+    #print(max(maxy))
     plt.style.use('dark_background')
     fig = plt.figure(figsize=(15,3))
     fig.patch.set_facecolor("#020202")
@@ -77,7 +83,7 @@ for ph in argList:
     width = .75
 
     p1 = plt.bar(ts, doty, width)
-    p2 = plt.bar(ts, aoty, width, color="#d62600")
+    p2 = plt.bar(ts, aoty, width, bottom=doty, color="#d62600")
 
 
     plt.title('Total queries over last 24 hours')
