@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #
 # Write a short webpage based on the data from the piholes
-import json, requests, sys
+import json, math, requests, sys
 import matplotlib
 matplotlib.use('Agg')
 matplotlib.rc('axes',edgecolor='#DDDDDD')
@@ -44,6 +44,8 @@ body,html {
 
 hfooter = '</body></html>'
 
+def roundup(x):
+    return x if x % 100 == 0 else x + 100 - x % 100
 
 ###  Creating the graphs for the webpage  ###
 
@@ -65,7 +67,7 @@ for ph in argList:
 
     for x in dot.keys():
         ts[i] = datetime.fromtimestamp(int(x)).strftime('%H:%M')
-        doty[i] = dot.get(x,0)
+        doty[i] = dot.get(x,0) - aot.get(x,0)
         aoty[i] = aot.get(x,0)
         maxy[i] = doty[i] + aoty[i]
         i += 1
@@ -81,6 +83,7 @@ for ph in argList:
     fig.patch.set_facecolor("#020202")
     #ind = np.arange(lengthdot)
     width = .75
+    maxmaxy = roundup(max(maxy))
 
     p1 = plt.bar(ts, doty, width)
     p2 = plt.bar(ts, aoty, width, bottom=doty, color="#d62600")
@@ -88,7 +91,7 @@ for ph in argList:
 
     plt.title('Total queries over last 24 hours')
     plt.xticks(np.arange(0, lengthdot-1, 10))
-    plt.yticks(np.arange(0, max(maxy), 100))
+    plt.yticks(np.arange(0, maxmaxy, 100))
     plt.legend((p1[0], p2[0]), ('Allowed', 'Blocked'))
 
     plt.savefig('/var/www/html/' + ph + '.png')
