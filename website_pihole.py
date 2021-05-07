@@ -7,6 +7,7 @@ matplotlib.use('Agg')
 matplotlib.rc('axes',edgecolor='#DDDDDD')
 import numpy as np
 import matplotlib.pyplot as plt
+from tenacity import *
 from datetime import datetime
 
 
@@ -47,15 +48,29 @@ hfooter = '</body></html>'
 def roundup(x):
     return x if x % 100 == 0 else x + 100 - x % 100
 
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(5))
+def getpage(URL):
+    global phSummary
+    phSummary = requests.get(URL)
+
 ###  Creating the graphs for the webpage  ###
 
 for ph in argList:
     URL='http://' + ph + '/admin/api.php?overTimeData10mins'
     picture='/var/www/html/' + ph + '.png'
-    phSummary = requests.get(URL)
+
+    try:
+        getpage(URL)
+    except ConnectionError:
+        pass
+    except RetryError:
+        sys.exit(5)
+
     phSummaryJson = json.loads(phSummary.text)
-    #print(phSummary.text)
-    dot = phSummaryJson["domains_over_time"]
+    try:
+        dot = phSummaryJson["domains_over_time"]
+    except KeyError:
+        sys.exit(6)
     aot = phSummaryJson["ads_over_time"]
 
     lengthdot = len(dot)
