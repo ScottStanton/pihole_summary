@@ -1,6 +1,13 @@
 #!/usr/bin/python3
 #
+# Written by ScottStanton
+# https://github.com/ScottStanton/
+#
+# This software is covered by The Unlicense license 
+#
+#
 # Write a short webpage based on the data from the piholes
+#
 import json, math, requests, sys
 import matplotlib
 matplotlib.use('Agg')
