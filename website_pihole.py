@@ -1,13 +1,6 @@
 #!/usr/bin/python3
 #
-# Written by ScottStanton
-# https://github.com/ScottStanton/
-#
-# This software is covered by The Unlicense license 
-#
-#
 # Write a short webpage based on the data from the piholes
-#
 import json, math, requests, sys
 import matplotlib
 matplotlib.use('Agg')
@@ -59,6 +52,27 @@ def roundup(x):
 def getpage(URL):
     global phSummary
     phSummary = requests.get(URL)
+
+
+def update_needed(host):
+    URL='http://' + host+ '/admin/api.php?versions'
+    try:
+        getpage(URL)
+    except ConnectionError:
+        pass
+    except RetryError:
+        sys.exit(5)
+    version = requests.get(URL) 
+    versionJSON = json.loads(version.text)
+    current = versionJSON["FTL_current"]
+    latest = versionJSON["FTL_latest"]
+    if current != latest:
+        output = "Update needed!"
+    else:
+        output = ""
+    return output
+
+
 
 ###  Creating the graphs for the webpage  ###
 
@@ -136,7 +150,7 @@ for ph in argList:
 <table style="height: 36px; width: 60%; border-collapse: collapse; border-style: none; margin-left: auto; margin-right: auto;" border="0" cellspacing="3" cellpadding="2">
 <tbody>
 <tr style="height: 30px;">
-<td rowspan=2, style="width: 14.2857%; height: 24px; text-align: center;"><h1><center><a href="http://{}/admin">{}</a></center></h1></td>
+<td rowspan=2, style="width: 14.2857%; height: 24px; text-align: center;"><h1><center><a href="http://{}/admin">{}</a></center></h1> ''' + update_needed(ph) + '''</td>
 <td style="width: 14.2857%; height: 24px; text-align: center;"><h3>Domains being blocked</h3></td>
 <td style="width: 14.2857%; height: 24px; text-align: center;"><h3>DNS Queries</h3></td>
 <td style="width: 14.2857%; height: 24px; text-align: center;"><h3>Ads Blocked</h3></td>
