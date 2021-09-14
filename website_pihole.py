@@ -10,11 +10,12 @@ import matplotlib.pyplot as plt
 from tenacity import *
 from datetime import datetime
 
-# Get a current timestamp
+
 dt = datetime.now()
 dateTimeNow = str(dt.year) + '-' + str(dt.month) + '-' + str(dt.day) + ' ' + str(dt.hour) + ':' + str("{0:0=2d}".format(dt.minute))
 
-# Deal with args
+htmlFile = '/var/www/html/pihole.html'
+
 argList=sys.argv
 del argList[0]
 
@@ -22,11 +23,6 @@ if len(argList) == 0:
    print('You need to supply at least one pihole server.')
    sys.exit(99)
 
-##############################################
-# Set up variables                           #
-##############################################
-
-htmlFile = '/var/www/html/pihole.html'
 rows = str(100/len(argList))[0:2]
 rows = str((rows + '%'))
 
@@ -42,16 +38,28 @@ body,html {
   color: #E0E0E0;
   background: #020202;
 }
+.glow {
+  font-size: 20px;
+  font-family: cursive;
+  color: #fff;
+  text-align: center;
+  animation: glow 1s ease-in-out infinite alternate;
+}
+@-webkit-keyframes glow {
+  from {
+    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073, 0 0 40px #e60073, 0 0 50px #e60073, 0 0 60px #e60073, 0 0 70px #e60073;
+  }
+  
+  to {
+    text-shadow: 0 0 20px #fff, 0 0 30px #ff4da6, 0 0 40px #ff4da6, 0 0 50px #ff4da6, 0 0 60px #ff4da6, 0 0 70px #ff4da6, 0 0 80px #ff4da6;
+  }
+}
 </style>
 </head>
 <body>
 \n'''
 
 hfooter = '</body></html>'
-
-##############################################
-# Set up Subroutines                         #
-##############################################
 
 def roundup(x):
     return x if x % 100 == 0 else x + 100 - x % 100
@@ -63,7 +71,6 @@ def getpage(URL):
 
 
 def update_needed(host):
-    # If there is a difference between current and latesst versions, add a note to the page.
     URL='http://' + host+ '/admin/api.php?versions'
     try:
         getpage(URL)
@@ -76,15 +83,14 @@ def update_needed(host):
     current = versionJSON["FTL_current"]
     latest = versionJSON["FTL_latest"]
     if current != latest:
-        output = "Update needed!"
+        output = '<h1 class="glow">Update Needed!</h1>'
     else:
         output = ""
     return output
 
 
-#############################################
+
 ###  Creating the graphs for the webpage  ###
-#############################################
 
 for ph in argList:
     URL='http://' + ph + '/admin/api.php?overTimeData10mins'
@@ -142,17 +148,15 @@ for ph in argList:
 
     plt.savefig('/var/www/html/' + ph + '.png')
 
-###########################################################
+
 ###  Open the html file and start writing the web page  ###
-###########################################################
 
 openFile = open(htmlFile,'w')
 openFile.write(hheader)
 
-###########################################################
+
 ###  This is the meat of the web page iterated for how  ###
 ###  ever many pihoes you put on the command line       ###
-###########################################################
 
 for ph in argList:
    URL='http://' + ph + '/admin/api.php?summary'
