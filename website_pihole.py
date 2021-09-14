@@ -71,6 +71,7 @@ def getpage(URL):
 
 
 def update_needed(host):
+    global current
     URL='http://' + host+ '/admin/api.php?versions'
     try:
         getpage(URL)
@@ -162,17 +163,20 @@ for ph in argList:
    URL='http://' + ph + '/admin/api.php?summary'
    phSummary = requests.get(URL) 
    phSummaryJson = json.loads(phSummary.text)
+   needupdate = update_needed(ph)
    center = '''<div style="width:100%; height:''' + rows + ''';">
 <table style="height: 36px; width: 60%; border-collapse: collapse; border-style: none; margin-left: auto; margin-right: auto;" border="0" cellspacing="3" cellpadding="2">
 <tbody>
 <tr style="height: 30px;">
-<td rowspan=2, style="width: 14.2857%; height: 24px; text-align: center;"><h1><center><a href="http://{}/admin">{}</a></center></h1> ''' + update_needed(ph) + '''</td>
+<td rowspan=2, style="width: 14.2857%; height: 24px; text-align: center;"><h1><center><a href="http://{}/admin">{}</a></center></h1> ''' + needupdate + '''</td>
+<td style="width: 14.2857%; height: 24px; text-align: center;"><h3>Version</h3></td>
 <td style="width: 14.2857%; height: 24px; text-align: center;"><h3>Domains being blocked</h3></td>
 <td style="width: 14.2857%; height: 24px; text-align: center;"><h3>DNS Queries</h3></td>
 <td style="width: 14.2857%; height: 24px; text-align: center;"><h3>Ads Blocked</h3></td>
 <td style="width: 14.2857%; height: 24px; text-align: center;"><h3>Percent of Ads</h3></td>
 </tr>
 <tr style="height: 32px;">
+<td style="width: 14.2857%; height: 24px; text-align: center;"><h3>{}</h3></td>
 <td style="width: 14.2857%; height: 24px; text-align: center;"><h3>{}</h3></td>
 <td style="width: 14.2857%; height: 24px; text-align: center;"><h3>{}</h3></td>
 <td style="width: 14.2857%; height: 24px; text-align: center;"><h3>{}</h3></td>
@@ -183,7 +187,7 @@ for ph in argList:
 <p><center><img src="''' + ph + '''.png" alt="graph" width=90% height=55%></center>
 <p><p><p><p>
 </div>\n'''
-   openFile.write(center.format(ph,ph,phSummaryJson.get("domains_being_blocked"),phSummaryJson.get("dns_queries_today"),phSummaryJson.get("ads_blocked_today"),phSummaryJson.get("ads_percentage_today")))
+   openFile.write(center.format(ph,ph,current,phSummaryJson.get("domains_being_blocked"),phSummaryJson.get("dns_queries_today"),phSummaryJson.get("ads_blocked_today"),phSummaryJson.get("ads_percentage_today")))
 
 openFile.write(hfooter)
 openFile.close()
