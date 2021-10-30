@@ -81,13 +81,13 @@ def update_needed(host):
         sys.exit(5)
     version = requests.get(URL) 
     versionJSON = json.loads(version.text)
-    current = versionJSON["FTL_current"]
+    currentver = versionJSON["FTL_current"]
     latest = versionJSON["FTL_latest"]
-    if current != latest:
-        output = '<h1 class="glow">Update Needed!</h1>'
+    if currentver != latest:
+        current = '<h1 class="glow">' + currentver + '</h1>'
     else:
-        output = ""
-    return output
+        current = currentver
+    return current
 
 
 
@@ -168,7 +168,7 @@ for ph in argList:
 <table style="height: 36px; width: 60%; border-collapse: collapse; border-style: none; margin-left: auto; margin-right: auto;" border="0" cellspacing="3" cellpadding="2">
 <tbody>
 <tr style="height: 30px;">
-<td rowspan=2, style="width: 14.2857%; height: 24px; text-align: center;"><h1><center><a href="http://{}/admin">{}</a></center></h1> ''' + needupdate + '''</td>
+<td rowspan=2, style="width: 14.2857%; height: 24px; text-align: center;"><h1><center><a href="http://{}/admin">{}</a></center></h1></td>
 <td style="width: 14.2857%; height: 24px; text-align: center;"><h3>Version</h3></td>
 <td style="width: 14.2857%; height: 24px; text-align: center;"><h3>Domains being blocked</h3></td>
 <td style="width: 14.2857%; height: 24px; text-align: center;"><h3>DNS Queries</h3></td>
