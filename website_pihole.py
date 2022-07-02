@@ -14,7 +14,9 @@ from datetime import datetime
 dt = datetime.now()
 dateTimeNow = str(dt.year) + '-' + str(dt.month) + '-' + str(dt.day) + ' ' + str(dt.hour) + ':' + str("{0:0=2d}".format(dt.minute))
 
-htmlFile = '/var/www/html/pihole.html'
+#htmlFile = '/var/www/html/pihole.html'
+htmlDir = '/usr/share/caddy/'
+htmlFile = '/usr/share/caddy/pihole.html'
 
 argList=sys.argv
 del argList[0]
@@ -96,7 +98,7 @@ def update_needed(host):
 
 for ph in argList:
     URL='http://' + ph + '/admin/api.php?overTimeData10mins'
-    picture='/var/www/html/' + ph + '.png'
+    picture= htmlDir + ph + '.png'
 
     try:
         getpage(URL)
@@ -148,7 +150,7 @@ for ph in argList:
     plt.yticks(np.arange(0, maxmaxy, 100))
     plt.legend((p1[0], p2[0]), ('Allowed', 'Blocked'))
 
-    plt.savefig('/var/www/html/' + ph + '.png')
+    plt.savefig(htmlDir + ph + '.png')
 
 
 ###  Open the html file and start writing the web page  ###
