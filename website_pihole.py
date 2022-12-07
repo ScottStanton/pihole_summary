@@ -29,9 +29,12 @@ def debug_print(string):
         print(f'DEBUG: {dt} - {string}')
 ## End of function
 
-debug_print(args.list)
-
+#htmlDir = '/usr/share/caddy/'
+#htmlFile = '/usr/share/caddy/pihole.html'
+htmlDir = '/var/www/html/'
 htmlFile = '/var/www/html/pihole.html'
+
+debug_print(args.list)
 
 rows = str(100/len(args.list))[0:2]
 rows = str((rows + '%'))
@@ -110,7 +113,7 @@ def update_needed(host):
 
 for ph in args.list:
     URL='http://' + ph + '/admin/api.php?overTimeData10mins'
-    picture='/var/www/html/' + ph + '.png'
+    picture= htmlDir + ph + '.png'
 
     try:
         getpage(URL)
@@ -162,7 +165,7 @@ for ph in args.list:
     plt.yticks(np.arange(0, maxmaxy, 100))
     plt.legend((p1[0], p2[0]), ('Allowed', 'Blocked'))
 
-    plt.savefig('/var/www/html/' + ph + '.png')
+    plt.savefig(htmlDir + ph + '.png')
 
 
 ###  Open the html file and start writing the web page  ###
