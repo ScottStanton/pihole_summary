@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 #
 # Write a short webpage based on the data from the piholes
+import argparse
 import json, math, requests, sys
 import matplotlib
 matplotlib.use('Agg')
@@ -10,20 +11,29 @@ import matplotlib.pyplot as plt
 from tenacity import *
 from datetime import datetime
 
+parser = argparse.ArgumentParser()
+
+parser.add_argument('-v','--verbose', action='store_true',
+       help="Show debugging messages on the command line")
+parser.add_argument('-l','--list', nargs='*', required=True,
+       help="List of pihole hosts")
+
+args = parser.parse_args()
 
 dt = datetime.now()
 dateTimeNow = str(dt.year) + '-' + str(dt.month) + '-' + str(dt.day) + ' ' + str(dt.hour) + ':' + str("{0:0=2d}".format(dt.minute))
 
+def debug_print(string):
+    # Add print statement here is -v is set.  Still have to figure out how to set it.
+    if args.verbose:
+        print(f'DEBUG: {dt} - {string}')
+## End of function
+
+debug_print(args.list)
+
 htmlFile = '/var/www/html/pihole.html'
 
-argList=sys.argv
-del argList[0]
-
-if len(argList) == 0:
-   print('You need to supply at least one pihole server.')
-   sys.exit(99)
-
-rows = str(100/len(argList))[0:2]
+rows = str(100/len(args.list))[0:2]
 rows = str((rows + '%'))
 
 hheader = '''<html>
@@ -62,6 +72,7 @@ body,html {
 hfooter = '</body></html>'
 
 def roundup(x):
+    debug_print('Rounding up ' + str(x))
     return x if x % 100 == 0 else x + 100 - x % 100
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(5))
@@ -83,8 +94,11 @@ def update_needed(host):
     versionJSON = json.loads(version.text)
     current = versionJSON["FTL_current"]
     latest = versionJSON["FTL_latest"]
+    debug_print('Versions for ' + host + ' - Current: ' + current + ' and latest: ' + latest) 
     core_current = versionJSON["core_current"]
-    if current != latest:
+    if latest == "":
+        output = ""
+    elif current != latest:
         output = '<h1 class="glow">Update Needed!</h1>'
     else:
         output = ""
@@ -94,7 +108,7 @@ def update_needed(host):
 
 ###  Creating the graphs for the webpage  ###
 
-for ph in argList:
+for ph in args.list:
     URL='http://' + ph + '/admin/api.php?overTimeData10mins'
     picture='/var/www/html/' + ph + '.png'
 
@@ -160,7 +174,7 @@ openFile.write(hheader)
 ###  This is the meat of the web page iterated for how  ###
 ###  ever many pihoes you put on the command line       ###
 
-for ph in argList:
+for ph in args.list:
    URL='http://' + ph + '/admin/api.php?summary'
    phSummary = requests.get(URL) 
    phSummaryJson = json.loads(phSummary.text)
