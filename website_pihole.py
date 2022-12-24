@@ -33,6 +33,16 @@ def debug_print(string):
 #htmlFile = '/usr/share/caddy/pihole.html'
 htmlDir = '/var/www/html/'
 htmlFile = '/var/www/html/pihole.html'
+tokenpath = '/home/pi/.pihole1_token'
+
+try:
+   f = open(tokenpath, "r")
+except:
+   print("Your pushbullet token needs to be saved in " + tokenpath)
+   sys.exit(1)
+
+token=f.read().rstrip()
+f.close()
 
 debug_print(args.list)
 
@@ -112,7 +122,7 @@ def update_needed(host):
 ###  Creating the graphs for the webpage  ###
 
 for ph in args.list:
-    URL='http://' + ph + '/admin/api.php?overTimeData10mins'
+    URL='http://' + ph + '/admin/api.php?overTimeData10mins&auth=' + token
     picture= htmlDir + ph + '.png'
 
     try:
@@ -178,7 +188,7 @@ openFile.write(hheader)
 ###  ever many pihoes you put on the command line       ###
 
 for ph in args.list:
-   URL='http://' + ph + '/admin/api.php?summary'
+   URL='http://' + ph + '/admin/api.php?summary&auth=' + token
    phSummary = requests.get(URL) 
    phSummaryJson = json.loads(phSummary.text)
    needupdate = update_needed(ph)
